@@ -1,5 +1,5 @@
-create database dbmaternidade;
 use dbmaternidade;
+
 create table mae (
 id_mae int auto_increment,
 rg varchar(10),
@@ -26,5 +26,3 @@ nome varchar(120),
 telefone varchar(20),
 especialidade varchar(100),
 constraint PK_MedicoBebe primary key(crm));
-
-
