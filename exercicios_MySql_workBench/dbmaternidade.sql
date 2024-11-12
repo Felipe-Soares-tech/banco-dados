@@ -46,21 +46,35 @@ insert into mae(nome,rg,endereco,telefone,dt_nascimento) values
 ('Simone Mendes','6789012345','Rua Sertaneja,500,Goiânia,GO','(62)93456-7890','1984-05-24'),
 ('Samara Felippo','7890123456','Rua dos Artistas,250,Rio de Janeiro,RJ','(21)95678-4321','1978-10-06');
 
-insert into bebe(nome,dt_nascimento,peso,altura,medico,mae) values
-('Giovanna','1997-02-02','3.50','50','Dr.Carlos Santos','Andréa Sorvetão'),
-('Stephanie','1999-06-05','3.45','49','Dra.Maria Oliveira','Andréa Sorvetão'),
-('Felipe','2003-11-15','3.55','51','Dra.Maria Oliveira','Andréa Sorvetão'),
-('Miguel','2004-07-11','3.30','49','Dr.Carlos Santos','Nívea Stelmann'),
-('Davi','2009-01-20','3.45','50','Dr.Carlos Santos','Claudia Leitte'),
-('Alícia','2009-07-28','3.40','49','Dra.Maria Oliveira','Samara Felippo'),
-('Marcelo','2009-10-02','3.60','52','Dr.Carlos Santos','Ivete Sangalo'),
-('Arthur','2011-08-10','3.50','50','Dr.João Silva','Eliana'),
-('Rafael','2012-08-15','3.55','51','Dr.João Silva','Claudia Leitte'),
-('Lara','2013-05-15','3.20','47','Dr.Carlos Santos','Samara Felippo'),
-('Henry','2014-02-03','3.60','50','Dra.Maria Oliveira','Simone Mendes'),
-('Bruna','2014-04-10','3.10','47','Dr.Carlos Santos','Nívea Stelmann'),
-('Manuela','2017-09-10','3.20','48','Dra.Maria Oliveira','Eliana'),
-('Helena','2018-02-10','3.35','49','Dra.Maria Oliveira','Ivete Sangalo'),
-('Marina','2018-02-10','3.40','49','Dr.João Silva','Ivete Sangalo'),
-('Bela','2019-08-20','3.25','48','Dra.Maria Oliveira','Claudia Leitte'),
-('Zaya','2021-02-22','3.30','48','Dr.João Silva','Simone Mendes');
+insert into bebe(nome,dt_nascimento,peso,altura,crm,id_mae) values
+('Giovanna','1997-02-02','3.50','50','1030','5'),
+('Stephanie','1999-06-05','3.45','49','1020','5'),
+('Felipe','2003-11-15','3.55','51','1020','5'),
+('Miguel','2004-07-11','3.30','49','1030','4'),
+('Davi','2009-01-20','3.45','50','1030','3'),
+('Alícia','2009-07-28','3.40','49','1020','7'),
+('Marcelo','2009-10-02','3.60','52','1030','2'),
+('Arthur','2011-08-10','3.50','50','1010','1'),
+('Rafael','2012-08-15','3.55','51','1010','3'),
+('Lara','2013-05-15','3.20','47','1030','7'),
+('Henry','2014-02-03','3.60','50','1020','6'),
+('Bruna','2014-04-10','3.10','47','1030','4'),
+('Manuela','2017-09-10','3.20','48','1020','1'),
+('Helena','2018-02-10','3.35','49','1020','2'),
+('Marina','2018-02-10','3.40','49','1010','2'),
+('Bela','2019-08-20','3.25','48','1020','3'),
+('Zaya','2021-02-22','3.30','48','1010','6');
+
+SELECT 
+    bebe.nome AS 'Nome',
+    bebe.dt_nascimento AS 'Data de Nascimento',
+    peso AS 'Peso',
+    altura AS 'Altura',
+    medico.nome AS 'Médico',
+    mae.nome AS 'Mãe'
+FROM
+    bebe
+        INNER JOIN
+    mae ON bebe.id_mae = mae.id_mae
+        INNER JOIN
+    medico ON bebe.crm = medico.crm;
