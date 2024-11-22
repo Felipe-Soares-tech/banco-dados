@@ -59,22 +59,59 @@ select distinct preco_da_locacao
 from filme;
 
 /*14. Listar a quantidade de filmes por preço da locação.*/
-select count(titulo), preco_da_locacao
+select distinct preco_da_locacao, count(*)
 from filme
-order by preco_da_locacao;
+group by preco_da_locacao;
 
 /*15. Listar os precos da locação que possuam mais de 340 filmes.*/
-SELECT preco_da_locacao, COUNT(*) AS quantidade_de_filmes
-FROM filme
-GROUP BY preco_da_locacao
+
 
 /*16. Listar a quantidade de atores por filme ordenando por quantidade de atores crescente.*/
-
+select count(ator.ator_id), filme.titulo, ator.ator_id, ator.primeiro_nome
+from ator inner join filme
+on ator.ator_id = filme.filme_id
+group by titulo
+order by ator_id asc;
 
 /*17. Listar a quantidade de atores para os filmes que possuem mais de 5 atores ordenando por quantidade de atores decrescente.*/
-
+select f.titulo, count(fa.ator_id) as quantidade_de_ator
+from filme_ator fa inner join filme f
+on fa.ator_id = f.filme_id
+group by fa.ator_id
+having count(fa.ator_id) > 20
+order by f.titulo desc;
 
 /*18. Listar o título e a quantidade de atores para os filmes que possuem o idioma "JAPANESE" e mais de 10 atores ordenando por ordem alfabética de título e ordem crescente de quantidade de atores.*/
+select f.titulo, count(fa.ator_id) as quantidade_de_ator, i.nome as idioma
+from filme_ator fa 
+inner join filme f
+/*on fa.ator_id = f.filme_id*/
+inner join idioma i
+/*on f.filme_id = i.idioma_id*/
+group by f.filme_id
+having nome = 'japanese'
+and count(fa.ator_id) > 10;
+
+select 
+  i.nome as idioma,
+  f.titulo,
+  count(fa.ator_id) tot
+from 
+  filme_ator fa 
+  inner join filme  f on fa.filme_id  = f.filme_id
+  inner join idioma i on f.idioma_id = i.idioma_id
+where 
+  lower(i.nome) = lower('japanese')
+group by 
+   i.nome,
+   f.titulo
+having count(*) > 10;
+
+/*on i.idioma_id = f.filme_id
+on f.filme_id = fa.filme_id
+inner join filme_ator fa
+
+*/
 
 
 /*19. Qual a maior duração da locação dentre os filmes?*/
