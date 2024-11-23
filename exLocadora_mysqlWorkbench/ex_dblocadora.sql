@@ -64,34 +64,26 @@ from filme
 group by preco_da_locacao;
 
 /*15. Listar os precos da locação que possuam mais de 340 filmes.*/
-
+select preco_da_locacao, count(*) as filmes from filme group by preco_da_locacao having filmes > 340;
 
 /*16. Listar a quantidade de atores por filme ordenando por quantidade de atores crescente.*/
-select count(ator.ator_id), filme.titulo, ator.ator_id, ator.primeiro_nome
-from ator inner join filme
-on ator.ator_id = filme.filme_id
-group by titulo
-order by ator_id asc;
+select count(a.ator_id), f.titulo
+from ator a inner join filme_ator fa
+on a.ator_id = fa.ator_id
+inner join filme f
+on fa.filme_id = f.filme_id
+group by f.titulo
+order by count(*) asc;
 
 /*17. Listar a quantidade de atores para os filmes que possuem mais de 5 atores ordenando por quantidade de atores decrescente.*/
-select f.titulo, count(fa.ator_id) as quantidade_de_ator
+select count(fa.ator_id) as quantidade_de_atores, f.titulo
 from filme_ator fa inner join filme f
-on fa.ator_id = f.filme_id
-group by fa.ator_id
-having count(fa.ator_id) > 20
-order by f.titulo desc;
+on fa.filme_id = f.filme_id
+group by f.titulo
+having count(fa.ator_id) < 5
+order by count(fa.ator_id) desc;
 
 /*18. Listar o título e a quantidade de atores para os filmes que possuem o idioma "JAPANESE" e mais de 10 atores ordenando por ordem alfabética de título e ordem crescente de quantidade de atores.*/
-select f.titulo, count(fa.ator_id) as quantidade_de_ator, i.nome as idioma
-from filme_ator fa 
-inner join filme f
-/*on fa.ator_id = f.filme_id*/
-inner join idioma i
-/*on f.filme_id = i.idioma_id*/
-group by f.filme_id
-having nome = 'japanese'
-and count(fa.ator_id) > 10;
-
 select 
   i.nome as idioma,
   f.titulo,
@@ -101,57 +93,115 @@ from
   inner join filme  f on fa.filme_id  = f.filme_id
   inner join idioma i on f.idioma_id = i.idioma_id
 where 
-  lower(i.nome) = lower('japanese')
+  lower(i.nome) = 'japanese'
 group by 
    i.nome,
    f.titulo
 having count(*) > 10;
 
-/*on i.idioma_id = f.filme_id
-on f.filme_id = fa.filme_id
-inner join filme_ator fa
-
-*/
-
-
 /*19. Qual a maior duração da locação dentre os filmes?*/
-
+select max(preco_da_locacao) from filme;
 
 /*20. Quantos filmes possuem a maior duração de locação?*/
-
+select titulo, preco_da_locacao 
+from filme 
+where preco_da_locacao = 4.99;
 
 /*21. Quantos filmes do idioma "JAPANESE" ou "GERMAN" possuem a maior duração de locação?*/
-
+select count(f.filme_id) as quantidade_de_filmes
+  from 
+     filme as f inner join idioma as i
+     on f.idioma_id = i.idioma_id
+  where duracao_da_locacao = 7
+  and lower(i.nome) = 'german'
+  or lower(i.nome) = 'japanese'
+  order by f.filme_id;
 
 /*22. Qual a quantidade de filmes por classificação e preço da locação?*/
-
-
+	select 
+count(titulo) quantidade_de_filmes,preco_da_locacao, classificacao 
+	from 
+filme
+	group by classificacao, preco_da_locacao;
+    
 /*23. Qual o maior tempo de duração de filme por categoria?*/
+select duracao_do_filme,nome
+from filme f 
+inner join filme_categoria fc
+on f.filme_id = fc.filme_id
+inner join categoria c
+on fc.categoria_id = c.categoria_id 
+where duracao_do_filme = 185;
 
 
 /*24. Listar a quantidade de filmes por categoria.*/
-
+select count(f.filme_id),nome
+from filme f 
+inner join filme_categoria fc
+on f.filme_id = fc.filme_id
+inner join categoria c
+on fc.categoria_id = c.categoria_id 
+group by nome;
 
 /*25. Listar a quantidade de filmes classificados como "G" por categoria.*/
-
+select count(f.filme_id), classificacao, c.nome
+from filme f 
+inner join filme_categoria fc
+on f.filme_id = fc.filme_id
+inner join categoria c
+on fc.categoria_id = c.categoria_id 
+where classificacao = 'G'
+group by nome;
 
 /*26. Listar a quantidade de filmes classificados como "G" OU "PG" por categoria.*/
-
+select count(f.filme_id),classificacao,nome
+from filme f 
+inner join filme_categoria fc
+on f.filme_id = fc.filme_id
+inner join categoria c
+on fc.categoria_id = c.categoria_id 
+where classificacao = 'G'
+or classificacao = 'PG'
+group by nome, classificacao
+order by nome;
 
 /*27. Listar a quantidade de filmes por categoria e classificação.*/
-
+select count(f.filme_id),classificacao,nome
+from filme f 
+inner join filme_categoria fc
+on f.filme_id = fc.filme_id
+inner join categoria c
+on fc.categoria_id = c.categoria_id 
+group by nome, classificacao;
 
 /*28. Qual a quantidade de filmes por Ator ordenando decrescente por quantidade?*/
-
+select count(f.titulo), fa.ator_id
+from filme f
+inner join filme_ator fa
+on f.filme_id = fa.filme_id
+group by fa.ator_id
+order by fa.ator_id;
 
 /*29. Qual a quantidade de filmes por ano de lançamento ordenando por quantidade crescente?*/
-
+select count(titulo), ano_de_lancamento
+	from filme
+group by ano_de_lancamento
+order by ano_de_lancamento;
 
 /*30. Listar os anos de lançamento que possuem mais de 400 filmes?*/
-
+select ano_de_lancamento, count(titulo)
+	from filme
+    group by ano_de_lancamento
+    having count(titulo) > 400;
 
 /*31. Listar os anos de lançamento dos filmes que possuem mais de 100 filmes com preço da locação maior que a média do preço da locação dos filmes da categoria "Children"?*/
-
+select f.ano_de_lancamento
+	from filme f
+    inner join filme_categoria fc
+    on f.filme_id = fc.filme_id
+    inner join categoria c
+    on fc.categoria_id =c.categoria_id
+    where preco_da_locacao > avg
 
 /*32. Quais as cidades e seu pais correspondente que pertencem a um país que inicie com a Letra “E”?*/
 
