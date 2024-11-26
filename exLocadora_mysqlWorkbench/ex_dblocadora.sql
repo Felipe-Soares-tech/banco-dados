@@ -100,51 +100,52 @@ group by
 having count(*) > 10;
 
 /*19. Qual a maior duração da locação dentre os filmes?*/
-select max(preco_da_locacao) from filme;
+select max(duracao_da_locacao) from filme;
 
 /*20. Quantos filmes possuem a maior duração de locação?*/
-select titulo, preco_da_locacao 
+select count(*) qt, duracao_da_locacao 
 from filme 
-where preco_da_locacao = 4.99;
+where duracao_da_locacao in (select max(duracao_da_locacao) from filme)
+group by duracao_da_locacao;
 
 /*21. Quantos filmes do idioma "JAPANESE" ou "GERMAN" possuem a maior duração de locação?*/
 select count(f.filme_id) as quantidade_de_filmes
   from 
      filme as f inner join idioma as i
      on f.idioma_id = i.idioma_id
-  where duracao_da_locacao = 7
-  and lower(i.nome) = 'german'
-  or lower(i.nome) = 'japanese'
+  where duracao_da_locacao = (select max(duracao_da_locacao) from filme)
+  and lower(i.nome) in ('german','japanese')
   order by f.filme_id;
 
 /*22. Qual a quantidade de filmes por classificação e preço da locação?*/
 	select 
-count(titulo) quantidade_de_filmes,preco_da_locacao, classificacao 
+count(titulo) quantidade_de_filmes, preco_da_locacao, classificacao 
 	from 
 filme
 	group by classificacao, preco_da_locacao;
     
 /*23. Qual o maior tempo de duração de filme por categoria?*/
-select duracao_do_filme,nome
-from filme f 
-inner join filme_categoria fc
-on f.filme_id = fc.filme_id
-inner join categoria c
-on fc.categoria_id = c.categoria_id 
-where duracao_do_filme = 185;
-
+	select max(duracao_do_filme),nome, c.categoria_id
+		from filme f 
+			inner join filme_categoria fc
+			on f.filme_id = fc.filme_id
+		
+			inner join categoria c
+			on fc.categoria_id = c.categoria_id 
+    group by nome, c.categoria_id;
 
 /*24. Listar a quantidade de filmes por categoria.*/
-select count(f.filme_id),nome
-from filme f 
-inner join filme_categoria fc
-on f.filme_id = fc.filme_id
-inner join categoria c
-on fc.categoria_id = c.categoria_id 
-group by nome;
+	select count(f.filme_id) quantidade_filmes,nome
+		from filme f 
+			inner join filme_categoria fc
+			on f.filme_id = fc.filme_id
+            
+			inner join categoria c
+			on fc.categoria_id = c.categoria_id 
+	group by nome;
 
 /*25. Listar a quantidade de filmes classificados como "G" por categoria.*/
-select count(f.filme_id), classificacao, c.nome
+select count(f.filme_id) quantidade_filmes, classificacao, c.nome
 from filme f 
 inner join filme_categoria fc
 on f.filme_id = fc.filme_id
@@ -154,7 +155,7 @@ where classificacao = 'G'
 group by nome;
 
 /*26. Listar a quantidade de filmes classificados como "G" OU "PG" por categoria.*/
-select count(f.filme_id),classificacao,nome
+select count(f.filme_id) quantidade_filmes,classificacao,nome
 from filme f 
 inner join filme_categoria fc
 on f.filme_id = fc.filme_id
@@ -166,7 +167,7 @@ group by nome, classificacao
 order by nome;
 
 /*27. Listar a quantidade de filmes por categoria e classificação.*/
-select count(f.filme_id),classificacao,nome
+select count(f.filme_id) quantidade_filmes, classificacao, nome
 from filme f 
 inner join filme_categoria fc
 on f.filme_id = fc.filme_id
@@ -175,7 +176,7 @@ on fc.categoria_id = c.categoria_id
 group by nome, classificacao;
 
 /*28. Qual a quantidade de filmes por Ator ordenando decrescente por quantidade?*/
-select count(f.titulo), fa.ator_id
+select count(f.titulo) quantidade_filmes, fa.ator_id
 from filme f
 inner join filme_ator fa
 on f.filme_id = fa.filme_id
@@ -183,13 +184,13 @@ group by fa.ator_id
 order by fa.ator_id;
 
 /*29. Qual a quantidade de filmes por ano de lançamento ordenando por quantidade crescente?*/
-select count(titulo), ano_de_lancamento
+select count(titulo) quantidade_filmes, ano_de_lancamento
 	from filme
 group by ano_de_lancamento
 order by ano_de_lancamento;
 
 /*30. Listar os anos de lançamento que possuem mais de 400 filmes?*/
-select ano_de_lancamento, count(titulo)
+select ano_de_lancamento, count(titulo) quantidade_filmes
 	from filme
     group by ano_de_lancamento
     having count(titulo) > 400;
@@ -201,49 +202,150 @@ select f.ano_de_lancamento
     on f.filme_id = fc.filme_id
     inner join categoria c
     on fc.categoria_id =c.categoria_id
-    where preco_da_locacao > avg
+    where preco_da_locacao > avg;
 
-/*32. Quais as cidades e seu pais correspondente que pertencem a um país que inicie com a Letra “E”?*/
-
+/*32. Quais as cidades e seu pais correspondente que pertencem a um país que inicie com a Letra “E”? */
+	select cidade, pais 
+		from cidade c
+		inner join pais p
+        on c.pais_id = p.pais_id
+	where pais like 'E%'
+    group by cidade, pais
+    order by pais;
 
 /*33. Qual a quantidade de cidades por pais em ordem decrescente?*/
-
-
+	select count(cidade) quantidade_cidade, pais
+		from cidade c
+        inner join pais p
+        on c.pais_id = p.pais_id
+	group by pais;
+    
+    
 /*34. Qual a quantidade de cidades que iniciam com a Letra “A” por pais em ordem crescente?*/
-
+	select count(cidade) quantidade_cidade, pais
+		from cidade c
+        inner join pais p
+        on c.pais_id = p.pais_id
+	where cidade like 'A%'
+    group by pais
+    order by pais desc;
 
 /*35. Quais os países que possuem mais de 3 cidades que iniciam com a Letra “A”?*/
-
+	select pais, count(cidade) quantidade_cidade
+		from pais p
+        inner join cidade c
+        on c.pais_id = p.pais_id
+        group by pais
+        having count(cidade) > 3;
 
 /*36. Quais os países que possuem mais de 3 cidades que iniciam com a Letra “A” ou tenha "R" ordenando por quantidade crescente?*/
-
+	select pais, count(cidade) quantidade_cidade
+		from pais p
+        inner join cidade c
+        on c.pais_id = p.pais_id
+	where cidade like 'A%' or
+        lower(cidade) like '%r%' 
+    group by pais
+    having count(cidade) > 3 
+	order by count(cidade) desc;
 
 /*37. Quais os clientes moram no país “United States”?*/
-
+	select cliente_id, pais
+		from cliente cl
+        inner join endereco e
+        on cl.endereco_id = e.endereco_id
+        
+        inner join cidade c
+        on e.cidade_id = c.cidade_id
+        
+        inner join pais p
+        on c.pais_id = p.pais_id
+	
+    where p.pais = 'United States';
 
 /*38. Quantos clientes moram no país “Brazil”?*/
-
+select count(cliente_id) quantidade_cliente, pais
+		from cliente cl
+        inner join endereco e
+        on cl.endereco_id = e.endereco_id
+        
+        inner join cidade c
+        on e.cidade_id = c.cidade_id
+        
+        inner join pais p
+        on c.pais_id = p.pais_id
+	
+    where p.pais = 'Brazil';
 
 /*39. Qual a quantidade de clientes por pais?*/
-
+select count(cliente_id) quantidade_cliente, pais
+		from cliente cl
+        inner join endereco e
+        on cl.endereco_id = e.endereco_id
+        
+        inner join cidade c
+        on e.cidade_id = c.cidade_id
+        
+        inner join pais p
+        on c.pais_id = p.pais_id
+	group by pais;
 
 /*40. Quais países possuem mais de 10 clientes?*/
-
+select count(cliente_id) quantidade_cliente , pais
+		from cliente cl
+        inner join endereco e
+        on cl.endereco_id = e.endereco_id
+        
+        inner join cidade c
+        on e.cidade_id = c.cidade_id
+        
+        inner join pais p
+        on c.pais_id = p.pais_id
+	group by pais
+	having count(cliente_id) > 10;
 
 /*41. Qual a média de duração dos filmes por idioma?*/
-
+	select avg(f.duracao_do_filme) média_de_duracao, i.nome
+		from filme f
+        inner join idioma i
+        on f.idioma_id = i.idioma_id
+	    group by i.nome;
 
 /*42. Qual a quantidade de atores que atuaram nos filmes do idioma “English”?*/
-
+	select count(fa.ator_id), i.nome
+		from filme_ator fa
+        inner join filme f
+        on fa.filme_id = f.filme_id
+        
+        inner join idioma i
+        on f.idioma_id = i.idioma_id
+        group by i.nome;
 
 /*43. Quais os atores do filme “BLANKET BEVERLY”?*/
-
+	select a.primeiro_nome, f.titulo titulo_filme
+		from ator a
+        inner join filme_ator fa
+        on a.ator_id = fa.ator_id
+        
+        inner join filme f
+        on fa.filme_id = f.filme_id
+        
+        where upper(f.titulo) = 'BLANKET BEVERLY';
 
 /*44. Quais categorias possuem mais de 60 filmes cadastrados?*/
-
+	select c.nome idioma, count(f.titulo) quantidade_filme
+		from filme f
+        inner join filme_categoria fc
+        on f.filme_id = fc.filme_id
+        
+        inner join categoria c
+        on fc.categoria_id = c.categoria_id
+	
+    group by c.nome
+    having count(f.titulo) > 60;
 
 /*45. Quais os filmes alugados (sem repetição) para clientes que moram na “Argentina”?*/
-
+	select distinct f.titulo,  
 
 /*46. Qual a quantidade de filmes alugados por Clientes que moram na “Chile”?*/
 
