@@ -1,4 +1,5 @@
 use locadora;
+SET SQL_SAFE_UPDATES = 0;
 
 /*1. Quais os países cadastrados?*/
 select pais from pais;
@@ -218,7 +219,8 @@ select f.ano_de_lancamento
 		from cidade c
         inner join pais p
         on c.pais_id = p.pais_id
-	group by pais;
+	group by pais
+    order by quantidade_cidade desc;
     
     
 /*34. Qual a quantidade de cidades que iniciam com a Letra “A” por pais em ordem crescente?*/
@@ -345,24 +347,101 @@ select count(cliente_id) quantidade_cliente , pais
     having count(f.titulo) > 60;
 
 /*45. Quais os filmes alugados (sem repetição) para clientes que moram na “Argentina”?*/
-	select distinct f.titulo,  
-
+		select distinct f.titulo,  p.pais 
+			from filme f
+            inner join inventario i
+            on f.filme_id = i.filme_id
+            
+            inner join aluguel a
+            on i.inventario_id = a.inventario_id
+            
+            inner join cliente cli
+            on a.cliente_id = cli.cliente_id
+            
+            inner join endereco e
+            on cli.endereco_id = e.endereco_id
+            
+            inner join cidade c
+            on e.cidade_id = c.cidade_id
+            
+            inner join pais p
+            on c.pais_id = p.pais_id
+            
+		where lower(pais) = 'argentina'
+        group by p.pais, f.titulo
+        order by pais;
+        
 /*46. Qual a quantidade de filmes alugados por Clientes que moram na “Chile”?*/
+		select count(f.titulo) quantidade_filmes,  p.pais
+			from filme f
+            inner join inventario i
+            on f.filme_id = i.filme_id
+            
+            inner join aluguel a
+            on i.inventario_id = a.inventario_id
+            
+            inner join cliente cli
+            on a.cliente_id = cli.cliente_id
+            
+            inner join endereco e
+            on cli.endereco_id = e.endereco_id
+            
+            inner join cidade c
+            on e.cidade_id = c.cidade_id
+            
+            inner join pais p
+            on c.pais_id = p.pais_id
+            
+		where lower(pais) = 'chile'
+        group by p.pais
+        order by count(f.titulo);
 
-
-/*47. Qual a quantidade de filmes alugados por funcionario?*/
-
-
+/*47. Qual a quantidade de filmes alugados por funcionario?*/ 
+	select count(f.titulo) quantidade_filmes, fu.funcionario_id
+			from filme f
+            inner join inventario i
+            on f.filme_id = i.filme_id
+            
+            inner join aluguel a
+            on i.inventario_id = a.inventario_id
+            
+            inner join funcionario fu
+            on a.funcionario_id = fu.funcionario_id
+		group by fu.funcionario_id;
+        
+	select count(titulo) from filme;
 /*48. Qual a quantidade de filmes alugados por funcionario para cada categoria?*/
-
+	select count(f.titulo) quantidade_filmes, fu.funcionario_id, ca.nome categoria
+		from categoria ca
+			inner join filme_categoria fc
+            on ca.categoria_id = fc.categoria_id
+            
+            inner join filme f
+            on fc.filme_id = f.filme_id
+            
+            inner join inventario i
+            on f.filme_id = i.filme_id
+            
+            inner join aluguel a
+            on i.inventario_id = a.inventario_id
+            
+            inner join funcionario fu
+            on a.funcionario_id = fu.funcionario_id
+		group by fu.funcionario_id,ca.nome
+        order by ca.nome;
+		
 
 /*49. Quais Filmes possuem preço da Locação maior que a média de preço da locação?*/
-
+	select titulo, preco_da_locacao
+		from filme
+        where preco_da_locacao > (select avg(preco_da_locacao) from filme)
+        group by titulo, preco_da_locacao;
 
 /*50. Qual a soma da duração dos Filmes por categoria?*/
-
+	
 
 /*51. Qual a quantidade de filmes locados mês a mês por ano? */
+
 
 
 /*52. Qual o total pago por classificação de filmes alugados no ano de 2006?*/
