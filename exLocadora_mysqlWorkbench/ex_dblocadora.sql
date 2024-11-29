@@ -237,6 +237,7 @@ select f.ano_de_lancamento
 		from pais p
         inner join cidade c
         on c.pais_id = p.pais_id
+        where cidade like 'A%'
         group by pais
         having count(cidade) > 3;
 
@@ -252,18 +253,20 @@ select f.ano_de_lancamento
 	order by count(cidade) desc;
 
 /*37. Quais os clientes moram no país “United States”?*/
-	select cliente_id, pais
-		from cliente cl
-        inner join endereco e
-        on cl.endereco_id = e.endereco_id
-        
-        inner join cidade c
-        on e.cidade_id = c.cidade_id
-        
-        inner join pais p
-        on c.pais_id = p.pais_id
-	
-    where p.pais = 'United States';
+	select 
+		row_number() over(partition by p.pais) qt,
+		concat_ws(' ', primeiro_nome, ultimo_nome) nome_cliente, pais
+			from cliente cl
+			inner join endereco e
+			on cl.endereco_id = e.endereco_id
+			
+			inner join cidade c
+			on e.cidade_id = c.cidade_id
+			
+			inner join pais p
+			on c.pais_id = p.pais_id
+		
+		where p.pais = 'United States';
 
 /*38. Quantos clientes moram no país “Brazil”?*/
 select count(cliente_id) quantidade_cliente, pais
@@ -314,13 +317,14 @@ select count(cliente_id) quantidade_cliente , pais
 	    group by i.nome;
 
 /*42. Qual a quantidade de atores que atuaram nos filmes do idioma “English”?*/
-	select count(fa.ator_id), i.nome
+	select count(distinct fa.ator_id), i.nome
 		from filme_ator fa
         inner join filme f
         on fa.filme_id = f.filme_id
         
         inner join idioma i
         on f.idioma_id = i.idioma_id
+        where i.nome = 'English'
         group by i.nome;
 
 /*43. Quais os atores do filme “BLANKET BEVERLY”?*/
@@ -344,7 +348,8 @@ select count(cliente_id) quantidade_cliente , pais
         on fc.categoria_id = c.categoria_id
 	
     group by c.nome
-    having count(f.titulo) > 60;
+    having count(f.titulo) > 60
+    order by quantidade_filme;
 
 /*45. Quais os filmes alugados (sem repetição) para clientes que moram na “Argentina”?*/
 		select distinct f.titulo,  p.pais 
@@ -438,17 +443,82 @@ select count(cliente_id) quantidade_cliente , pais
         group by titulo, preco_da_locacao;
 
 /*50. Qual a soma da duração dos Filmes por categoria?*/
-	
+	select sum(duracao_do_filme) soma_duracao_filme, c.nome categoria
+		from filme f
+		inner join filme_categoria fc
+        on f.filme_id = fc.filme_id
+        
+        inner join categoria c
+        on fc.categoria_id = c.categoria_id
+		
+	group by c.nome;
 
 /*51. Qual a quantidade de filmes locados mês a mês por ano? */
-
-
+	select count(f.titulo) quantidade_filme, month(data_de_aluguel) mes_data,year(data_de_aluguel) ano_data
+		from filme f
+        inner join inventario i
+        on f.filme_id = i.filme_id
+        
+        inner join aluguel a
+        on i.inventario_id = a.inventario_id
+        
+	group by month(data_de_aluguel),Year(data_de_aluguel)
+    order by mes_data desc;
 
 /*52. Qual o total pago por classificação de filmes alugados no ano de 2006?*/
-
-
+		select sum(pa.valor) valor_total, f.classificacao, year(pa.data_de_pagamento) ano_pagamento
+			from pagamento pa
+			inner join cliente cli
+            on pa.cliente_id = cli.cliente_id
+            
+            inner join aluguel al
+            on cli.cliente_id = al.cliente_id
+            
+            inner join inventario i
+            on i.inventario_id = al.inventario_id
+            
+			inner join filme f
+            on i.filme_id = f.filme_id
+		where year(pa.data_de_pagamento) = 2006
+		group by classificacao, year(data_de_pagamento);
+    
+    select distinct classificacao from filme;
 /*53. Qual a média mensal do valor pago por filmes alugados no ano de 2005?*/
+	select avg(pa.valor) media_valor, month(pa.data_de_pagamento) mes, year(pa.data_de_pagamento) ano
+			from pagamento pa
+			inner join cliente cli
+            on pa.cliente_id = cli.cliente_id
+            
+            inner join aluguel al
+            on cli.cliente_id = al.cliente_id
+            
+            inner join inventario i
+            on i.inventario_id = al.inventario_id
+            
+			inner join filme f
+            on i.filme_id = f.filme_id
+		where year(pa.data_de_pagamento) = 2005
+		group by month(pa.data_de_pagamento), year(pa.data_de_pagamento)
+        order by mes;
 
+/*54. Qual o total pago por filme alugado no mês de Junho de 2005 por cliente? -----    CORRIGIR  */
+	select sum(valor) valor_total, f.titulo titulo_filme, month(pa.data_de_pagamento) mes,  year(pa.data_de_pagamento) ano
+			from pagamento pa
+			inner join cliente cli
+            on pa.cliente_id = cli.cliente_id
+            
+            inner join aluguel al
+            on cli.cliente_id = al.cliente_id
+            
+            inner join inventario i
+            on i.inventario_id = al.inventario_id
+            
+			inner join filme f
+            on i.filme_id = f.filme_id
+            
+		where month(pa.data_de_pagamento) = 6
+        and year(pa.data_de_pagamento) = 2005
+		group by f.titulo, mes, ano
+		order by f.titulo;
 
-/*54. Qual o total pago por filme alugado no mês de Junho de 2006 por cliente? -----    CORRIGIR  */
-
+select data_de_pagamento from pagamento
