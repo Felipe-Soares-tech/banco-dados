@@ -197,13 +197,17 @@ select ano_de_lancamento, count(titulo) quantidade_filmes
     having count(titulo) > 400;
 
 /*31. Listar os anos de lançamento dos filmes que possuem mais de 100 filmes com preço da locação maior que a média do preço da locação dos filmes da categoria "Children"?*/
-select f.ano_de_lancamento
-	from filme f
-    inner join filme_categoria fc
-    on f.filme_id = fc.filme_id
-    inner join categoria c
-    on fc.categoria_id =c.categoria_id
-    where preco_da_locacao > avg;
+	select ano_de_lancamento, count(titulo)
+		from filme
+        
+	where preco_da_locacao > (select avg(f.preco_da_locacao)
+								from filme f inner join filme_categoria fc
+								on f.filme_id = fc.filme_id
+								inner join categoria c
+								on fc.categoria_id = c.categoria_id
+								where c.nome = 'Children')
+	group by ano_de_lancamento
+	having count(titulo) > 100;
 
 /*32. Quais as cidades e seu pais correspondente que pertencem a um país que inicie com a Letra “E”? */
 	select cidade, pais 
