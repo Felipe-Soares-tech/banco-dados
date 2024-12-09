@@ -3,6 +3,8 @@
 -- DE "Woodwork" PARA "Bola na Trave"
 -- DE "Cartão Vermelho (Second Yellow Card)" PARA "CCartão Vermelho (Segundo Cartão Amarelo)Segundo Cartão Amarelo)"
 use campeonatobrasileiro;
+SET SQL_SAFE_UPDATES=0;
+
 select distinct descricao from evento order by descricao;
 update evento
 	set descricao = 'Substituição'
@@ -129,6 +131,10 @@ select * from vw_mandante
 	update partida
 		set gol_mandante = 1, gol_visitante = 1
         where id_partida = 363;
+
+UPDATE partida SET gol_mandante = 1, gol_visitante = 2 WHERE id_partida = 367;
+UPDATE partida SET gol_mandante = 0, gol_visitante = 3 WHERE id_partida = 370;
+UPDATE partida SET gol_mandante = 3, gol_visitante = 1 WHERE id_partida = 369;
         
 select t.id_time,t.sigla,gol_mandante, gol_visitante, id_visitante,ti.sigla, id_partida, rodada
 	from partida p 
@@ -151,8 +157,40 @@ select t.id_time,t.sigla,gol_mandante, gol_visitante, id_visitante,ti.sigla, rod
 -- 03. Elabore um relatório por minuto e a quantidade de gols (não contar "Gol anulado (Var)")
 -- e ordene pela quantidade do maior para o menor
 
+	select 
+	minuto , 
+    count(*) qt_gols 
+from evento
+where descricao like 'Gol%' and descricao not like '%VAR%' 
+group by minuto 
+order by qt_gols desc;
+
 -- 04. Elabore um relatório por idade e quantidade de jogadores
+select 
+	2024 - year(dt_nascimento) idade, 
+    count(*) quantidade
+from jogador
+where dt_nascimento is not null and posicao not in ('Auxiliar técnico','Técnico')
+group by idade
+order by idade desc;
 
 -- 05. Elabore um relatório por jogador e quantidade de cartões, 
 -- detalhar também a quantidade de Cartões Vermelho e Amarelo
 -- ordene pela quantidade total de Cartões'
+
+	select 
+    jo.id_jogador, 
+    jo.nome, 
+    sum(if(descricao like 'Cartão Amarelo', 1, 0 )) cartao_amarelo,
+    sum(if(descricao like 'Cartão Vermelho', 1, 0 )) cartao_vermelho,
+    sum(if(descricao like 'Cartão Vermelho (Segundo Cartão Amarelo)', 1, 0 )) segundo_cartao_amarelo,
+    count(e.descricao) quantidade_cartao
+		from jogador jo
+        inner join evento e
+        on jo.id_jogador = e.id_jogador
+	where posicao not in ('Auxiliar técnico','Técnico')
+	and descricao like 'Cartão%'
+    group by jo.id_jogador, jo.nome
+    order by quantidade_cartao desc;
+    select distinct descricao from evento where descricao like 'Cartão%';
+	
