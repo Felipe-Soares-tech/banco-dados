@@ -192,5 +192,100 @@ order by idade desc;
 	and descricao like 'Cartão%'
     group by jo.id_jogador, jo.nome
     order by quantidade_cartao desc;
-    select distinct descricao from evento where descricao like 'Cartão%';
+    select * from evento;
+    select * from partida;
 	
+    -- 06. Deseja-se saber qual a quantidade de jogos que aconteceram por dia
+/* exemplo:
+dia		quantidade
+sábado	98
+domingo	121
+terça	11
+quarta	64
+quinta	29
+segunda	11
+sexta	8
+*/
+	select
+    CASE DAYNAME(horario)
+        WHEN 'Sunday' THEN 'Domingo'
+        WHEN 'Monday' THEN 'Segunda-feira'
+        WHEN 'Tuesday' THEN 'Terça-feira'
+        WHEN 'Wednesday' THEN 'Quarta-feira'
+        WHEN 'Thursday' THEN 'Quinta-feira'
+        WHEN 'Friday' THEN 'Sexta-feira'
+        WHEN 'Saturday' THEN 'Sábado' 
+        end as dia_semana,
+        count(id_partida)
+        
+			from partida
+			group by dia_semana;
+            
+-- 07. Deseja-se saber a quantidade total de cada evento 
+-- e quantos aconteceram ate os 45min e depois dos 45min
+/*exemplo:
+descricao									total	ate_45		depois_45
+Gol (Gol de campo)							734		327			407
+Cartão Amarelo								1806	658			1148
+Substituição								3256	112			3144
+Bola na Trave								217		93			124
+Pênalti Perdido								23		12			11
+Cartão Vermelho								80		25			55
+Gol anulado (Var)							39		17			22
+Cartão Vermelho (Segundo Cartão Amarelo)	44		7			37
+Gol (Pênalti)								71		37			34
+Gol (Gol Contra)							14		5			9
+*/
+
+	select 
+    count(*), 
+    descricao,
+    sum(if(minuto <= 45, 1,0)) ate_45,
+    sum(if(minuto > 45, 1,0)) depois_45
+		from evento
+        group by descricao;
+        
+-- 08. Deseja-se saber a quantidade dos eventos:
+-- "Bola na Trave", "Pênalti Perdido" , "Gol anulado (Var)" pelos clubes
+/*exemplo:
+sigla 	Bola na Trave 	Pênalti Perdido Gol anulado (Var)
+ACG		4				2				2
+CAP		12				1				1
+CAM		16				1				3
+BAH		12				0				1
+BOT		10				2				1
+.
+.
+*/
+select distinct descricao from evento;
+
+	select 
+    t.sigla,
+    sum(if(e.descricao like '%Trave%',1,0)) bola_trave,
+    sum(if(e.descricao like '%Perdido%',1,0)) penalti_perdido,
+    sum(if(e.descricao like '%Var%',1,0)) gol_anulado
+    
+		from time t
+        inner join jogador jo
+        on t.id_time = jo.id_time
+        
+        inner join evento e
+        on jo.id_jogador = e.id_jogador
+        
+        group by sigla
+        order by sigla;
+        
+-- 09. Deseja-se saber a quantidade de jogador por faixa etária
+/*exemplo:
+faixa_etaria	qt
+Entre 30 e39	191
+Entre 20 e29	405
+Entre 10 e19	30
+Entre 40 e49	4
+*/
+	select 
+    case 2024 - year(dt_nascimento)
+    when between 30 and 39 then 
+		jogador
+        
+         
