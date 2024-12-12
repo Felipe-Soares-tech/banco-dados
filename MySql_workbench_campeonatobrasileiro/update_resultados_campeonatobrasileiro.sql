@@ -284,8 +284,15 @@ Entre 10 e19	30
 Entre 40 e49	4
 */
 	select 
-    case 2024 - year(dt_nascimento)
-    when between 30 and 39 then 
-		jogador
+	concat('Entre ',faixa_etaria,'0 e',faixa_etaria,'9') faixa_etaria,
+    count(*) quantidade
+from (
+	select 
+		truncate((2024 - year(dt_nascimento))/10,0) faixa_etaria
+	from jogador
+	where dt_nascimento is not null and posicao not in ('Auxiliar técnico','Técnico')
+)A
+group by faixa_etaria
+;
         
          

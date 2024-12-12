@@ -192,7 +192,7 @@ update time set
     sigla = 'JUV',
     cidade = 'Caxias do Sul',
     estado = 'RS',
-    id_estadio = 
+    id_estadio = 4
 where id_time = 13;
 
 update time set
@@ -201,8 +201,14 @@ update time set
     sigla = 'VIT',
     cidade = 'Salvador',
     estado = 'BA',
-    id_estadio = 
+    id_estadio = 4
 where id_time = 18;
+
+create table usuarios (
+id INT PRIMARY KEY,
+nome varchar(100),
+email VARCHAR(100)
+);
 
 
  
