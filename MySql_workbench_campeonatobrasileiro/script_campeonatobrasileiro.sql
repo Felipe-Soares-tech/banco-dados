@@ -139,11 +139,7 @@ insert into time(nome_completo,nome,sigla,cidade,estado,id_estadio) values
 ('Club de Regatas Vasco da Gama','Vasco','VAS','Rio de Janeiro','RJ',1);
 
 
-select * from estadio;
-insert into estadio(nome, endereco, capacidade)
-values('')
-show columns from id_estadio;
-select * from time;
+
 
 update time set id_estadio = 18 where id_time = 1;
 update time set id_estadio = 11 where id_time = 2;
@@ -205,9 +201,10 @@ update time set
 where id_time = 18;
 
 create table usuarios (
-id INT PRIMARY KEY,
+id int NOT NULL auto_increment,
 nome varchar(100),
-email VARCHAR(100)
+email VARCHAR(100),
+PRIMARY KEY (id)
 );
 
 
