@@ -21,9 +21,6 @@ update evento
     
 -- 02. Atualize o resultado das partidas do brasileirão 
 -- que já aconteceram e ainda não foi gravado o resultado.
-select * from vw_mandante
-		union all
-	  select * from vw_visitante;
       
     
     update partida
@@ -295,4 +292,22 @@ from (
 group by faixa_etaria
 ;
         
-         
+-- 10. Deseja-se saber o total de gols em cada estádio
+/*exemplo:
+nome_estadio									quantidade
+Mineirão (Estádio Governador Magalhães Pinto)	87
+Morumbi (Estádio Cícero Pompeu de Toledo)		80
+Maracanã										77
+Neo Química Arena								48
+Estádio Alfredo Jaconi							48
+*/
+         select 
+	nome nome_estadio, 
+    sum(gol_mandante + gol_visitante) quantidade
+from estadio as e
+inner join partida as p on e.id_estadio = p.id_estadio
+where gol_mandante is not null
+group by nome 
+order by quantidade desc;
+
+select * from time;
