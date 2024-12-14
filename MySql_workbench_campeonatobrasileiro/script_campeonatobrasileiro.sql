@@ -207,6 +207,14 @@ email VARCHAR(100),
 PRIMARY KEY (id)
 );
 
+CREATE TABLE auditoria_usuarios (
+id int NOT NULL auto_increment,
+id_usuario int NOT NULL,
+nome VARCHAR(100),
+email varchar(100),
+operacao varchar(100),
+data_evento timestamp NOT NULL,
+PRIMARY KEY (id)
+);
 
- 
-    
+    drop table auditoria_usuarios;
