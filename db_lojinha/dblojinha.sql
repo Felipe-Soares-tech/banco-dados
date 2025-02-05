@@ -53,3 +53,5 @@ quantidade int,
 constraint PK_id_pedido_produto primary key (id),
 constraint FK_id_pedido foreign key (id_pedido) references pedido(id),
 constraint FK_id_produto foreign key (id_produto) references produto(id));
+
+
