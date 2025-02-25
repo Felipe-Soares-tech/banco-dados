@@ -15,14 +15,6 @@ response = requests.get(url, headers=headers)
 obj = response.json()
 lista = obj['data']['menu']['menu'][1]['itens']
 
-# loop para mostrar todos os itens
-i = 0
-while i < len(lista):
-    titulo = lista[i]['title']
-    descricao = lista[i]['description']
-    print(f'{titulo} - {descricao}')
-    i += 1
-
 def banco(sql):
     conexao = mysql.connector.connect(
         host = 'localhost',
@@ -30,11 +22,24 @@ def banco(sql):
         user = 'root',
         password = 'senai@123'
     )
-cursor = conexao.cursor()
-cursor =  execute(sql)
-conexao.commit()
-cursor.close()
-conexao.close()
+    cursor = conexao.cursor()
+    cursor.execute(sql)
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+
+# loop para mostrar todos os itens
+i = 0
+while i < len(lista):
+    titulo = lista[i]['title']
+    descricao = lista[i]['description']
+    print(f'{titulo} - {descricao}')
+    #
+    sql = f"INSERT INTO pizza(sabor, ingredientes) VALUES('{titulo}','{descricao}');"
+    banco(sql)
+    i += 1
+
+
 
 
 
