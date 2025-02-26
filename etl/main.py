@@ -33,9 +33,12 @@ i = 0
 while i < len(lista):
     titulo = lista[i]['title']
     descricao = lista[i]['description']
-    print(f'{titulo} - {descricao}')
+    preco = lista[i]['price']
+    print(f'{titulo} - {descricao} - {preco}')
     #
-    sql = f"INSERT INTO pizza(sabor, ingredientes) VALUES('{titulo}','{descricao}');"
+    # sql = f"INSERT INTO pizza(sabor, ingredientes) VALUES('{titulo}','{descricao}');"
+    sql = f"UPDATE pizza SET preco = '{preco}' where sabor = '{titulo}';" 
+    # sql = f"UPDATE pizza SET sabor = '{titulo}', ingredientes = '{descricao}' where sabor = is null ;"
     banco(sql)
     i += 1
 
