@@ -43,9 +43,3 @@ while i < len(lista):
     i += 1
 
 
-
-
-
-
-# instalar o request no bash com 'pip install requests'
-
