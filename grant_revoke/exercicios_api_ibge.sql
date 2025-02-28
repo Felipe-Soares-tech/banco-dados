@@ -26,8 +26,14 @@ id_municipio int primary key,
 nome varchar(100),
 id_estado int,
 foreign key(id_estado) references estados(id_estado));
+
+select * from regioes;
+select * from estados;
+select * from municipios;
+
+
+
 -- id
-drop table estados;
 -- sigla // quando tiver
 -- nome
 -- id_<outra_tb> // quando tiver
